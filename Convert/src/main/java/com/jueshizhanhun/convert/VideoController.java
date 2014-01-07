@@ -45,6 +45,7 @@ public class VideoController {
   
         String path = "\\resources\\videos\\";
         String videoPath = PathUtils.getPath(path);
+        String newImagePath = "\\resources\\imgages\\";
         String targetPath = "";
         String fileName = file.getOriginalFilename();
         // 判断文件是否存在  
@@ -63,9 +64,7 @@ public class VideoController {
             	    fileName = fileName+".flv";
 	        		if (type == 0) { 
 	        	    	targetPath = videoConverter.ffmpegVideoConverter(videoPath, targetPath); 
-	//        	    	if (null != oldImagePath) {
-	//        	    		videoConverter.ffmpegImageConverter(oldImagePath,newImagePath); 
-	//        			}
+	        	    		videoConverter.ffmpegImageConverter(videoPath,newImagePath); 
 	        	    } else if (type == 1) { 
 	        	    	targetPath =  videoConverter.mencoderVideoConverter(videoPath,targetPath); 
 	        	    }

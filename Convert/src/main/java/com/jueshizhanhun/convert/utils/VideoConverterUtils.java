@@ -1,5 +1,12 @@
 package com.jueshizhanhun.convert.utils;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
+
 
 public class VideoConverterUtils {
 
@@ -93,5 +100,51 @@ public class VideoConverterUtils {
 		    } 
 		    return 9; 
 		  } 
-	  
+		/**
+		 * 实现创建缩略图
+		 * @param srcFile	源图片地址
+		 * @param destFile	目的图片地址
+		 * @创建人 PengBo
+		 * @创建时间 2013-8-5  上午10:00:17
+		 */
+		public static void createPreviewImage(String srcFile, String destFile) {   
+	        try {   
+	            File fi = new File(srcFile); 	//大图片文件  
+	            File fo = new File(destFile); 	//将要转换出的小图文件   
+	            
+	            //读取图片
+	            BufferedImage bis = ImageIO.read(fi);   
+	            //获得图片原来的高宽
+	            int w = bis.getWidth();   
+	            int h = bis.getHeight();   
+	            
+	            //等比例缩放
+	            int nw = 120; 	
+	            int nh = (nw * h) / w;   
+	            if (nh > 120) {   
+	                nh = 120;   
+	                nw = (nh * w) / h;   
+	            }   
+	            
+	            double sx = (double) nw / w;   
+	            double sy = (double) nh / h;   
+	            
+	            //创建一个转换器
+	            AffineTransform transform =new AffineTransform();
+	            transform.setToScale(sx, sy);  
+	            
+	            AffineTransformOp ato = new AffineTransformOp(transform, null);   
+	            
+	            BufferedImage bid = new BufferedImage(nw, nh,   
+	                    BufferedImage.TYPE_3BYTE_BGR);  
+	            
+	            ato.filter(bis, bid);  
+	            
+	            ImageIO.write(bid, "jpeg", fo);   
+	            
+	            
+	        } catch (Exception e) {   
+	            e.printStackTrace();   
+	        }   
+	    }
 }

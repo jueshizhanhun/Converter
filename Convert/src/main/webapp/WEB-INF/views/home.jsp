@@ -16,5 +16,8 @@
 <br>
 <a href="<c:url value='flex/page'/>">文件上传页面</a>
 <a href="<c:url value='video/page'/>">视频上传页面</a>
+
+<br>
+<p>soffice -headless -accept="socket,host=127.0.0.1,port=8100;urp;" -nofirststartwizard </p>
 </body>
 </html>

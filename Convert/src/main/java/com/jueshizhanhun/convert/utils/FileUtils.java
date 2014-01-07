@@ -20,7 +20,7 @@ public class FileUtils {
 		int splitIndex = fileName.lastIndexOf(".");
         return fileName.substring(splitIndex + 1);
 	}
-	
+	/** 复制一个文件 */
 	public static void copyFile(String inputFile,String outputFile) throws FileNotFoundException{
 		File sFile = new File(inputFile);
 		File tFile = new File(outputFile);
@@ -42,4 +42,5 @@ public class FileUtils {
 			}
         } 
 	}
+	
 }

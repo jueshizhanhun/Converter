@@ -5,20 +5,23 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.jueshizhanhun.convert.service.VideoConverter;
+import com.jueshizhanhun.convert.utils.PathUtils;
 
 @Service
 public class ffmpegConverter implements VideoConverter{
 
+	// 获取配置的转换工具（ffmpeg.exe）的存放路径
+    static String ffmpegPath = PathUtils.getMavenWebProjectPath("\\resource\\tools\\ffmpeg.exe");
 
 	  /**
-	   * ffmpeg图片转换
+	   * ffmpeg抓去图片
 	   */
 	// 生成图片 参数String newfilename, String newimg 
-	  public synchronized String ffmpegImageConverter(String oldImagePath, String newImagePath) { 
+	  public synchronized String ffmpegImageConverter(String videoPath, String newImagePath) { 
 	    List<String> commend = new java.util.ArrayList<String>(); 
-	    commend.add("D:\\development\\Convert\\ffmpeg\\bin\\ffmpeg.exe"); 
+	    commend.add(ffmpegPath); 
 	    commend.add("-i"); 
-	    commend.add(oldImagePath); 
+	    commend.add(videoPath); 
 	    commend.add("-y"); 
 	    commend.add("-f"); 
 	    commend.add("image2"); 
@@ -51,7 +54,7 @@ public class ffmpegConverter implements VideoConverter{
 //	      return false; 
 //	    } 
 	    List<String> commend = new java.util.ArrayList<String>(); 
-	    commend.add("D:\\development\\Convert\\ffmpeg\\bin\\ffmpeg.exe");    
+	    commend.add(ffmpegPath);    
 	    commend.add("-i"); 
 	    commend.add(videoPath); 
 	    commend.add("-ab"); 
