@@ -1,5 +1,10 @@
 package com.jueshizhanhun.convert.service.impl;
 
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.MultimediaInfo;
+
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,8 +16,8 @@ import com.jueshizhanhun.convert.utils.PathUtils;
 public class ffmpegConverter implements VideoConverter{
 
 	// 获取配置的转换工具（ffmpeg.exe）的存放路径
-    static String ffmpegPath = PathUtils.getMavenWebProjectPath("\\resource\\tools\\ffmpeg.exe");
-
+//    static String ffmpegPath = PathUtils.getMavenWebProjectPath("\\resource\\tools\\ffmpeg.exe");
+    static String ffmpegPath = ("D:\\development\\Conert\\ffmpeg\\bin\\ffmpeg.exe");
 	  /**
 	   * ffmpeg抓去图片
 	   */
@@ -26,16 +31,26 @@ public class ffmpegConverter implements VideoConverter{
 	    commend.add("-f"); 
 	    commend.add("image2"); 
 	    commend.add("-ss"); 
-	    commend.add("38"); 
+	    commend.add("5"); 
 	    commend.add("-t"); 
 	    commend.add("0.001"); 
 	    commend.add("-s"); 
 	    commend.add("320x240"); 
 	    commend.add(newImagePath); 
+	    System.out.println(commend); 
 	    try { 
 	      ProcessBuilder builder = new ProcessBuilder(); 
 	      builder.command(commend); 
-	      builder.start(); 
+	      Process process= builder.start(); 
+	      //等待进程执行完毕
+          if(process.waitFor() != 0){
+                 //如果进程运行结果不为0,表示进程是错误退出的
+                 //获得进程实例的错误输出
+                 InputStream error = process.getErrorStream();
+                 //do something
+           //  System.out.println(error.);
+          }
+	     System.out.println(process.waitFor()); 
 	      return newImagePath; 
 	    } catch (Exception e) { 
 	      e.printStackTrace(); 
@@ -48,7 +63,7 @@ public class ffmpegConverter implements VideoConverter{
 	   * ffmpeg视频转换
 	   */
 	@Override
-	public String ffmpegVideoConverter(String videoPath, String targetPath) {
+	public  synchronized String ffmpegVideoConverter(String videoPath, String targetPath) {
 //	    if (!checkfile(videoPath)) { 
 //	      System.out.println(videoPath + " is not file aaa"); 
 //	      return false; 
@@ -81,7 +96,16 @@ public class ffmpegConverter implements VideoConverter{
 	    try { 
 	      ProcessBuilder builder = new ProcessBuilder(); 
 	      builder.command(commend); 
-	      builder.start(); 
+	      Process process= builder.start(); 
+	      //等待进程执行完毕
+          if(process.waitFor() != 0){
+                 //如果进程运行结果不为0,表示进程是错误退出的
+                 //获得进程实例的错误输出
+                 InputStream error = process.getErrorStream();
+                 //do something
+           //  System.out.println(error.);
+          }
+	     System.out.println(process.exitValue()); 
 	      return targetPath; 
 	    } catch (Exception e) { 
 	      e.printStackTrace(); 
@@ -91,6 +115,97 @@ public class ffmpegConverter implements VideoConverter{
 	}
 
 
+	public String Video2segment(String videoPath,String tsPath, String m3u8Path,String httpPath) {
+	    List<String> commend = new java.util.ArrayList<String>(); 
+	    commend.add("ffmpeg");    
+	    commend.add("-loglevel"); 
+	    commend.add("quiet");
+	    commend.add("-i"); 
+	    commend.add(videoPath); 
+	    commend.add("-f"); 
+	    commend.add("mpegts"); 
+	    commend.add("- |"); 
+	    commend.add("segmenter"); 
+	    commend.add("-i -"); 
+	    commend.add("-threads"); 
+	    commend.add("5"); 
+	    commend.add("-d"); 
+	    commend.add("10"); 
+	    commend.add("-p"); 
+	    commend.add(tsPath);
+	    commend.add("-m"); 
+	    commend.add(m3u8Path);
+	    commend.add("-u"); 
+	    commend.add(httpPath); 
+	    System.out.println(commend); 
+	    try { 
+	      ProcessBuilder builder = new ProcessBuilder(); 
+	      builder.command(commend); 
+	      builder.start(); 
+	  	return m3u8Path; 
+	    } catch (Exception e) { 
+	      e.printStackTrace(); 
+	      return null; 
+	    }
+	}
+	
+	
+	public String Video2TS(String videoPath,String tsPath,String segmentPath,String m3u8Path,String httpPath) {
+	    List<String> commend = new java.util.ArrayList<String>(); 
+	    commend.add("ffmpeg");    
+	    commend.add("-i"); 
+	    commend.add(videoPath); 
+	    commend.add("-threads");
+	    commend.add("10");
+	    commend.add("-vcodec");
+	    commend.add("libx264");
+	    commend.add("-y"); 
+	    commend.add(tsPath);
+	    System.out.println(commend); 
+	    try { 
+	      ProcessBuilder builder = new ProcessBuilder(); 
+	      builder.command(commend); 
+	      Process p = builder.start(); 
+	      if (p.exitValue() != 0) {
+	    	  throw new Exception();
+		} 
+	      return TS2M3u8(tsPath,segmentPath,m3u8Path,httpPath);
+	    } catch (Exception e) { 
+	      e.printStackTrace(); 
+	      return null; 
+	    }
+	}
+	
+	public String TS2M3u8(String videoPath,String tsPath, String m3u8Path,String httpPath) {
+	    List<String> commend = new java.util.ArrayList<String>(); 
+	    commend.add("segmenter");    
+	    commend.add("-i"); 
+	    commend.add(videoPath); 
+	    commend.add("-d");
+	    commend.add("10");
+	    commend.add("-p");
+	    commend.add(tsPath);
+	    commend.add("-m"); 
+	    commend.add(m3u8Path);
+	    commend.add("-u"); 
+	    commend.add(httpPath);
+	    System.out.println(commend); 
+	    try { 
+	      ProcessBuilder builder = new ProcessBuilder(); 
+	      builder.command(commend); 
+	      Process p = builder.start(); 
+	      if (p.exitValue() != 0) {
+	    	   throw new Exception();
+	      } 
+	      return m3u8Path;
+	    } catch (Exception e) { 
+	      e.printStackTrace(); 
+	      return null; 
+	    }
+	}
+	
+	
+	
 	/**
 	 * mencoder视频转换
 	 */
@@ -143,8 +258,57 @@ public class ffmpegConverter implements VideoConverter{
 	      e.printStackTrace(); 
 	      return null; 
 	    } 
+	    
+	}
+	
+	
+	public String getTime( String videoPath){
+	      File source = new File(videoPath);
+	        Encoder encoder = new Encoder();
+	        try {
+	             MultimediaInfo m = encoder.getInfo(source);
+	             Long ls = m.getDuration();
+	             
+	             Long l = ls/1000;
+	             Long hLong = l/3600;
+	             Long mLong = (l-hLong*3600)/60;
+	             Long sLong = (l-hLong*3600-mLong*60);
+	             Long hs=ls-l*1000;
+	             System.out.println("此视频时长为:"+hLong+"时"+mLong+"分"+sLong+"秒"+hs+"毫秒！");
+	             System.out.println("此视频时总长为:"+ls+"毫秒！");
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+			return videoPath;
+	}
+	
+	public void getfile(){
+		File file = new File("D:\\streams\\jjyy\\");
+		File[] files = file.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			System.out.println(i);
+			 System.out.println("第"+i+"个");
+		     System.out.println(files[i]);
+		     System.out.println(path(files[i].toString())+".flv");
+		}
+
+	}
+	
+	public String path(String url){
+		int splitIndex = url.lastIndexOf(".");
+		return url.substring(0, splitIndex);
 	}
 
-	  
+	  public static void main(String[] args) {
+		 String videoPath ="D:\\streams\\jjyy\\PH传感器的标定.asf";
+		 String newImagePath ="D:\\streams\\jjyy\\PH传感器的标定.flv";
+		 ffmpegConverter fConverter =new ffmpegConverter();
+//		 fConverter.ffmpegVideoConverter(videoPath, newImagePath);
+//		 fConverter.ffmpegVideoConverter(newImagePath,videoPath);
+//		 fConverter.ffmpegImageConverter(videoPath, newImagePath);
+//		 fConverter.Video2TS(videoPath, "2", "3", "4", "5");
+//		 fConverter.ffmpegVideoConverter(videoPath,newImagePath);
+		 fConverter.getfile();
+	}
 	  
 }

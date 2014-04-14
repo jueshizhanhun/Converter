@@ -69,4 +69,11 @@ public class FlexPaperController {
         return new ModelAndView("docPlayer/flexpaper").addObject("file", path);  
     }  
 	
+	public static void main(String[] args) {
+		PDFConverter pdfConverter = new OpenOfficePDFConverter();
+		SWFConverter swfConverter = new SWFToolsSWFConverter();
+		DocConverterUtils converter = new DocConverterUtils(pdfConverter,swfConverter);
+		String path="D:\\development\\Conert\\test\\26429.txt";
+		converter.convert(path);
+	}
 }

@@ -15,7 +15,7 @@ import com.jueshizhanhun.convert.utils.FileUtils;
 public class OpenOfficePDFConverter implements PDFConverter{
 	
 	private static  OfficeManager officeManager;
-	private static String OFFICE_HOME = "D:\\development\\Convert\\OpenOffice4";
+	private static String OFFICE_HOME = "D:\\development\\Conert\\OpenOffice4";
 	private static int port[] = {8100};
 
 	
@@ -76,5 +76,11 @@ public class OpenOfficePDFConverter implements PDFConverter{
 	            officeManager.stop();
 	        }
 	        System.out.println("关闭office转换成功!");
+	}
+	
+	public static void main(String[] args) {
+		OpenOfficePDFConverter officePDFConverter =new OpenOfficePDFConverter();
+		officePDFConverter.convert2PDF("D:\\development\\Conert\\test\\《星际动物园》_英汉对照.txt","D:\\development\\Conert\\test\\《星际动物园》_英汉对照.pdf");
+//		officePDFConverter.stopService();
 	}
 }
